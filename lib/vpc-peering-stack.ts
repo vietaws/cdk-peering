@@ -3,8 +3,8 @@ import { CfnVPCPeeringConnection } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
 export interface VpcPeeringProps extends StackProps {
-    VPC_ID : string,
-    PEER_VPC_ID : string,
+    VPC_ID : string, //sourceVpc
+    PEER_VPC_ID : string, //destVpc
     PEER_OWNER_ID: string,
     REGION: string,
     PEER_ROLE_ARN ?: string
@@ -32,7 +32,7 @@ export class VpcPeeringStack extends Stack {
                 },
                 {
                     key:  "Name",
-                    value: "Peering CDK Demo"
+                    value: `Peering CDK Demo - ${id}`
                 }
             ],
 

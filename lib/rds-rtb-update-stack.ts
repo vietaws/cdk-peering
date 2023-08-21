@@ -5,7 +5,7 @@ import { Construct } from "constructs";
 export interface RdsRtbProps extends StackProps{
     PEERING_CONNECTION: CfnVPCPeeringConnection
     RDS_VPC : Vpc,
-    CLOUD9_VPC_CIDR : string
+    DEST_VPC_CIDR : string
 }
 
 export class RdsRtbStack extends Stack{
@@ -14,8 +14,8 @@ export class RdsRtbStack extends Stack{
         //add rtb
 
         props.RDS_VPC.isolatedSubnets.forEach(({routeTable : {routeTableId}}, index)=>{
-            new CfnRoute(this, 'private-peering-rtb' + index, {
-                destinationCidrBlock: props.CLOUD9_VPC_CIDR,
+            new CfnRoute(this, 'private-peering-rtb' + index + id, {
+                destinationCidrBlock: props.DEST_VPC_CIDR,
                 routeTableId,
                 vpcPeeringConnectionId: props.PEERING_CONNECTION.ref
             })
