@@ -8,3 +8,7 @@ echo $REGION
 
 export REGION=$REGION
 export ACCOUNT_ID=$ACCOUNT_ID
+
+# psql -h gen-ai-redshift-demo.cafsubk31dga.ap-southeast-1.redshift.amazonaws.com -p 5439 -U awsuser -d demo
+
+#create table public.test (c1 int);

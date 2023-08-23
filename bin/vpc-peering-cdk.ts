@@ -9,6 +9,8 @@ import { RdsRtbStack } from '../lib/rds-rtb-update-stack';
 import { Cloud9RtbStack } from '../lib/cloud9-rtb-update-stack';
 import { ImportedVpcStack } from '../lib/imported-vpc-stack';
 import { ImportedDefaultVpcStack } from '../lib/imported-default-vpc-stack';
+import { RedShiftStack } from '../lib/redshift-stack';
+import { S3BucketStack } from '../lib/s3-bucket-stack';
 
 let REGION : string 
 let ACCOUNT_ID : string
@@ -58,7 +60,7 @@ const peeringDefault = new VpcPeeringStack(app, 'peering-default', {
   PEER_OWNER_ID: ACCOUNT_ID,
   REGION: REGION,
   VPC_ID : defaultVpcStack.vpc.vpcId,
-  PEER_VPC_ID : rdsStack.vpcId
+  PEER_VPC_ID : rdsStack.vpc.vpcId
 })
 
 new RdsRtbStack(app, 'rds-to-default-vpc-rtb', {
@@ -69,9 +71,15 @@ new RdsRtbStack(app, 'rds-to-default-vpc-rtb', {
 new Cloud9RtbStack(app, 'cloud9-to-default-vpc-rtb', {
   CLOUD9_VPC: defaultVpcStack.vpc,
   PEERING_CONNECTION: peeringDefault.peering,
-  DEST_VPC_CIDR: rdsStack.vpcCidr,
+  DEST_VPC_CIDR: rdsStack.vpc.vpcCidrBlock,
   VPC_DEFAULT: true
 })
+
+const redshiftStack = new RedShiftStack(app, 'redshift-cluster', {
+  VPC : rdsStack.vpc
+})
+
+const s3BucketStack = new S3BucketStack(app, 'gen-ai-bucket',{})
 
 // const peeringStack = new VpcPeeringStack(app, 'peering-cloud9', {
 //   REGION: REGION,

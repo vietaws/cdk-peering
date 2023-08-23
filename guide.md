@@ -28,3 +28,8 @@ export ACCOUNT_ID=$ACCOUNT_ID
 ```sh
 env
 ```
+
+#### connect to redshift
+
+psql -h gen-ai-redshift-demo.cafsubk31dga.ap-southeast-1.redshift.amazonaws.com
+-p 5439 -U awsuser -d demo

@@ -1,6 +1,6 @@
 import { CfnOutput, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import {CfnRoute, CfnRouteTable, IVpc, InstanceClass, InstanceSize, InstanceType, IpAddresses, Peer, Port, RouterType, Subnet, SubnetType, Vpc} from 'aws-cdk-lib/aws-ec2'
+import {CfnRoute, CfnRouteTable, GatewayVpcEndpointAwsService, IVpc, InstanceClass, InstanceSize, InstanceType, IpAddresses, Peer, Port, RouterType, Subnet, SubnetType, Vpc} from 'aws-cdk-lib/aws-ec2'
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Credentials, DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion, StorageType } from "aws-cdk-lib/aws-rds";
 
@@ -9,10 +9,6 @@ export interface rdsProps extends StackProps {
 }
 
 export class RdsVpcStack extends Stack {
-    public vpcId : string
-    public vpcCidr : string
-    public accountId : string 
-    public region : string
     public vpc : Vpc
     constructor(scope : Construct, id: string, props : rdsProps){
         super(scope, id, props)
@@ -25,6 +21,8 @@ export class RdsVpcStack extends Stack {
             vpcName: id,
             ipAddresses: IpAddresses.cidr('10.1.0.0/16'),
             maxAzs: 2,
+            enableDnsHostnames: true,
+            enableDnsSupport: true,
             subnetConfiguration: [
                 {
                     cidrMask: 24,
@@ -37,12 +35,19 @@ export class RdsVpcStack extends Stack {
                     subnetType: SubnetType.PRIVATE_ISOLATED,
                     
                 }
-            ]
+            ],
+            gatewayEndpoints: {
+                "S3" : {
+                    service: GatewayVpcEndpointAwsService.S3,
+                    subnets: [
+                        {
+                            subnetType: SubnetType.PRIVATE_ISOLATED
+                        }
+                    ]
+                }
+            }
         })
-        this.vpcId = this.vpc.vpcId
-        this.vpcCidr = this.vpc.vpcCidrBlock
-        this.accountId = Stack.of(this).account
-        this.region = Stack.of(this).region
+       
 
         
     }
